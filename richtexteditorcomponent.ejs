@@ -1,0 +1,106 @@
+<div :id="'richTextEditor' + instanceId" class="richtexteditor-wrap fullSizeContainer" :class="[{'focusin': isFocused}, {'cursor-not-allowed pointer-events-none': disableeditor},{'iserror':iserror}]">
+    <div class="richtexteditor-body" v-if="!displayrichtextonly">
+        <div class="richtexteditor-header flex-auto d-flex fullWidth height-40px">
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center"
+                :class="[{'selected': selectedStyles.includes('insertUnorderedList')}]"
+                @mousedown="differentiateStyling('insertUnorderedList');">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#unordered-list"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center"
+                :class="[{'selected': selectedStyles.includes('insertOrderedList')}]"
+                @mousedown="differentiateStyling('insertOrderedList');">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#ordered-list"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center"
+                :class="[{'selected': selectedStyles.includes('insertSubList')}]"
+                @mousedown="differentiateTabStyling($event, selectedStyles.includes('insertSubList') ? 'remove' : 'insert');">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#sub-bullet-points"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center"
+                @mouseover="colorPalette = true;"  @mouseleave="colorPalette = false;" @mousedown="removeColor()">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#paint-icon"></use>
+                    </svg>
+                </div>
+                <div v-show="colorPalette" class="richrextFontcolorContainer">
+                    <div @mousedown.stop="changeColor($event,'redColor')" class="colormain">
+                        <div class="colorRed"></div>
+                    </div>
+                    <div @mousedown.stop="changeColor($event,'blueColor')" class="colormain">
+                        <div class="colorBlue"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center"
+                @mousedown="hightlightText($event)">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#highlight-icon"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10 justify-center hidden" v-if="deleteicon" @mousedown="removeContent">
+                <div class="svg-icon size22 cursor-pointer">
+                    <svg class="cursor-pointer">
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#trash"></use>
+                    </svg>
+                </div>
+            </div>
+            <div v-if="showcloseicon" class="header-icon  width-45px d-inline-block  justify-center ml-auto noBorderRight  d-flex icon-tick-border p-absolute padding-10   cursor-pointer border-left-blue-300">
+                <div class="svg-icon size22 cursor-pointer"  @click="switchDisplayContent(true)">    
+                    <svg>
+                        <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#icon-tick"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="header-icon  width-45px d-inline-block padding-10  justify-center ml-auto noBorderRight cursor-pointer border-left-blue-300"
+            :class="[{'selected': selectedStyles.includes('bold')}]"
+            v-if="showcloseicon" @click="switchDisplayContent(true);">
+            <div class="svg-icon size22 cursor-pointer">
+                <svg>
+                    <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#close"></use>
+                </svg>
+            </div>
+        </div>
+        </div>
+        <div id="resize_panel" class="richtexteditor-content fullSizeContainer p-relative overFlowYAuto">
+            <div :class="['richtexteditor-placeholder padding-10 p-absolute', iserror ? validationcolor: 'blue400']" v-if="!text.length && !isFocused" @click="placeholderOnclick"> {{placeholder}}
+            </div>
+            <div data-type="input" id="richTextEditor-text"
+                :class="['richTextEditor-text fullSizeContainer padding-10 outline-none llRichText', classlist]"
+                @focusin="registerFocus($event, true)" @focusout="registerFocus($event, false)" @keydown.enter="" @keydown.tab="differentiateTabStyling($event)"
+                @input="onInput($event.target)" ref="editable" @paste="handleClipboard" :contenteditable="!disableeditor">
+            </div>
+        </div>
+        <div id="resize" class="note-resizebar fullWidth cursor-n-resize height-15 d-flex"
+            @mousedown="activateResize">
+            <span class="svg-icon size22 d-flex m-auto pb8">
+                <svg>
+                    <use xlink:href="images/icons-sprite.svg?version=<$=temp$>#hamburger-menu"></use>
+                </svg>
+            </span>
+        </div>
+    </div>
+    <div class="richtexteditor-footer fontSize-10 grey400 m10 d-flex justify-between"
+        v-if="!displayrichtextonly">
+        <div v-if="!iserror && required" class="form-msg">*Required</div>
+        <div :class="['form-msg', validationcolor]" v-if="iserror"><span :class="errorclass"></span>
+        </div>
+    </div>
+    <div v-if="displayrichtextonly" class="fullSizeContainer" v-html="text" @click="switchDisplayContent(false)">
+    </div>
+
+</div>
